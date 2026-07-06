@@ -1,7 +1,7 @@
-#include <avr/interrupt.h> // Per cli() e sei()
+#include <avr/interrupt.h>
 #include "semaphore.h"
-#include "scheduler.h"     // Per current_tcb e schedule()
-#include "tcb.h"           // Per OK, ERROR e lo stato Waiting
+#include "scheduler.h"
+#include "tcb.h"
 
 int8_t sem_init(Semaphore *sem, uint8_t value) {
     if (sem == NULL) return ERROR;

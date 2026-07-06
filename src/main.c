@@ -49,11 +49,23 @@ void my_itoa(uint32_t num) {
 }
 
 /**
- * Background Idle Thread
+ * Background Idle Thread operating as an Echo Server
+ * Captures characters typed on the PC and echoes them back dynamically.
  */
 void idle_fn(uint32_t thread_arg __attribute__((unused))) {
     while(1) {
-        asm volatile("nop"); /* Non-blocking operation */
+        /* Check if a character has arrived in the RX buffer without blocking */
+        if (usart_kbhit()) {
+            char c = usart_getchar();
+            
+            /* Print a clean indicator and echo the character back to the PC */
+            usart_pstr(" [Echo: ");
+            usart_putchar(c);
+            usart_pstr("]\n");
+        } else {
+            /* If no data is available, yield or execute a nop to save CPU */
+            asm volatile("nop");
+        }
     }
 }
 
@@ -81,7 +93,7 @@ void producer_fn(uint32_t arg) {
         sem_post(&sem[target_consumer]);
         
         /* Pacing delay to prevent buffer flooding */
-        _delay_ms(50); 
+        //_delay_ms(50); 
     }
 }
 
